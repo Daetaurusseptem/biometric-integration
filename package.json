@@ -20,10 +20,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.4",
-<<<<<<< HEAD
+
     "typescript": "^5.3.3",
-=======
->>>>>>> 97797fca8e8ec0a100b4c30265d2f3c1d6e06a89
     "zk-jubaer": "^2.0.5"
   },
   "devDependencies": {

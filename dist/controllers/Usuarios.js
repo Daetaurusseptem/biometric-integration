@@ -45,6 +45,9 @@ class UsuarioController {
             }
             catch (error) {
                 res.status(500).json({ 'error': 'Error en la solicitud' });
+                const { empresaId } = req.body;
+                const usuarios = yield usuario_1.Usuario.find({ empresa: empresaId });
+                res.status(500).json(error);
             }
         });
     }
