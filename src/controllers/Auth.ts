@@ -35,17 +35,19 @@ export const login = async  (req:Request, resp:Response)=>{
          
         console.log(JSON.stringify(usuarioDB._id));
         const token = await generarJWT(usuarioDB._id)
-
-        console.log(token);
+         
+        
         return resp.status(200).json({
             ok:true,
             menu:getMenuFrontEnd(usuarioDB.rol),
-            usuario:usuarioDB
+            usuario:usuarioDB,
+            token,  
+            
         })
     }
 catch (error) {
 
-        return resp.status(500).json({ 
+        return resp.status(500).json({  
             okay:false,
             msg:'Porfavor hable con el administrador: '
         })

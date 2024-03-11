@@ -104,7 +104,7 @@ const registrarAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const salida = tiempos[tiempos.length - 1];
         if (entrada == salida) {
             const asistencia = yield asistencias_1.Asistencia.create({
-                empleado: empleadoExistente._id, // Utiliza el _id del empleado existente
+                empleado: empleadoExistente._id,
                 entrada: entrada,
                 salida: salida,
                 tipo: 'inconsistencia',
@@ -113,7 +113,7 @@ const registrarAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
         try {
             const asistencia = yield asistencias_1.Asistencia.create({
-                empleado: empleadoExistente._id, // Utiliza el _id del empleado existente
+                empleado: empleadoExistente._id,
                 entrada: entrada,
                 salida: salida,
                 tipo: 'asistencia',

@@ -39,11 +39,11 @@ const login = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
         }
         console.log(JSON.stringify(usuarioDB._id));
         const token = yield (0, jwt_helper_1.generarJWT)(usuarioDB._id);
-        console.log(token);
         return resp.status(200).json({
             ok: true,
             menu: (0, menu_1.getMenuFrontEnd)(usuarioDB.rol),
-            usuario: usuarioDB
+            usuario: usuarioDB,
+            token,
         });
     }
     catch (error) {
