@@ -27,7 +27,7 @@ class Server {
         this.connectToMongoDB();
     }
     connectToMongoDB() {
-        const mongoUri = 'mongodb+srv://jaimeson1305:Deusexvolta1305@cluster0.rew7wcv.mongodb.net/?retryWrites=true&w=majority';
+        const mongoUri = process.env.mongoUri;
         mongoose_1.default.connect(mongoUri)
             .then(() => console.log('Conexión a MongoDB establecida'))
             .catch(err => console.error(err));

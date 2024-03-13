@@ -109,7 +109,7 @@ const sincronizarAsistenciasTotales = (req, res) => __awaiter(void 0, void 0, vo
             const nuevaAsistencia = new asistencias_1.Asistencia({
                 empleado: empleado._id,
                 fechaHora: asistencia.recordTime,
-                tipo: 'asistencia',
+                tipo: 'asistencia', // Considerar todos los registros como asistencias
                 detalles: 'Registro biométrico' // Detalle genérico para cada asistencia
             });
             yield zk.clearAttendanceLog();
