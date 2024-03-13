@@ -3,15 +3,15 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 
 
-import usuarioRoutes from '../routes/usuario';
-import empleadoRoutes from '../routes/empelado';
-import empresaRoutes from '../routes/empresa';
-import departamentoRoutes from '../routes/departamentos';
-import asistenciaRoutes from '../routes/asistencias';
-import horarioRoutes from '../routes/horarios';
-import vacacionesRoutes from '../routes/vacaciones';
-import authRoutes from '../routes/auth';
-import syncRoutes from '../routes/sync';
+import usuarioRoutes from '../routes/usuario.js';
+import empleadoRoutes from '../routes/empelado.js';
+import empresaRoutes from '../routes/empresa.js';
+import departamentoRoutes from '../routes/departamentos.js';
+import asistenciaRoutes from '../routes/asistencias.js';
+import horarioRoutes from '../routes/horarios.js';
+import vacacionesRoutes from '../routes/vacaciones.js';
+import authRoutes from '../routes/auth.js';
+import syncRoutes from '../routes/sync.js';
 
 class Server {
   public app: Application;
@@ -29,7 +29,7 @@ class Server {
   }
 
   private connectToMongoDB(): void {
-    mongoose.connect(process.env.mongoUri)
+    mongoose.connect(process.env.mongoUri!)
       .then(() => console.log('Conexión a MongoDB establecida'))
       .catch((err: any) => console.error(err));
   }
