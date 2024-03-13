@@ -16,4 +16,4 @@ const empleadoSchema = new Schema({
 });
 
 export const Empleado = mongoose.model('Empleado', empleadoSchema);
- 
+  

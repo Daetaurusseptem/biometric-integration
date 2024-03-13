@@ -5,8 +5,8 @@ import mongoose from 'mongoose';
 
 interface AsistenciaData {
   deviceUserId: string;
-  tiempoRegistro: string;
-}
+  tiempoRegistro: string; 
+} 
 
 
 export const registrarAsistencia = async (req: Request, res: Response) => {
