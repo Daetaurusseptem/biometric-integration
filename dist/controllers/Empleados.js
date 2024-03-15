@@ -15,7 +15,11 @@ const horarios_1 = require("../models/horarios");
 const asistencias_1 = require("../models/asistencias");
 const crearEmpleado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.body);
+        console.log("antes ", req.body.nombre);
+        if (req.body.nombre == '' || undefined || null) {
+            req.body.nombre = 'no definido';
+        }
+        console.log("despues ", req.body.nombre);
         const nuevoEmpleado = new empleado_1.Empleado(req.body);
         const empleadoGuardado = yield nuevoEmpleado.save();
         res.status(201).json({

@@ -11,7 +11,7 @@ export const crearEmpleado = async (req: Request, res: Response) => {
     }
     console.log("despues ",req.body.nombre);
     const nuevoEmpleado = new Empleado(req.body);
-    
+     
     const empleadoGuardado = await nuevoEmpleado.save();
     res.status(201).json({
   
