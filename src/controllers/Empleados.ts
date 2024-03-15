@@ -6,6 +6,9 @@ import { Asistencia } from '../models/asistencias';
 export const crearEmpleado = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
+    if(req.body.nombre==''){
+      req.body.nombre='no definido'
+    }
     const nuevoEmpleado = new Empleado(req.body);
     const empleadoGuardado = await nuevoEmpleado.save();
     res.status(201).json({
