@@ -19,7 +19,7 @@ const jwt_helper_1 = require("../helpers/jwt-helper");
 const menu_1 = require("../helpers/menu");
 const empresa_1 = require("../models/empresa");
 const login = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('login');
+    console.log('login ');
     const { username, password } = req.body;
     console.log(username, password);
     try {

@@ -76,6 +76,7 @@ exports.eliminarAsistencia = eliminarAsistencia;
 const registrarAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { asistencias } = req.body;
     const { empresaId } = req.params;
+    console.log('ssss');
     // Agrupar asistencias por deviceUserId
     const asistenciasPorUsuario = asistencias.reduce((acc, asistencia) => {
         const { deviceUserId, tiempoRegistro } = asistencia;

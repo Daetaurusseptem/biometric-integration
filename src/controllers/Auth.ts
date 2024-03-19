@@ -8,7 +8,7 @@ import { getMenuFrontEnd } from '../helpers/menu';
 import {Empresa} from '../models/empresa';
 
 export const login = async  (req:Request, resp:Response)=>{
-    console.log('login');
+    console.log('login ');
     const {username, password} = req.body
     console.log(username, password);
 

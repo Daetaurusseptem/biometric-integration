@@ -67,6 +67,7 @@ export const eliminarAsistencia = async (req: Request, res: Response) => {
 export const registrarAsistencias= async (req: Request, res: Response) => {
   const { asistencias } = req.body;
   const { empresaId } = req.params;
+  console.log('ssss');
   
 
   // Agrupar asistencias por deviceUserId

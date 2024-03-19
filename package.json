@@ -5,8 +5,8 @@
   "main": "./dist/index.js",
   "scripts": {
     "dev": "npx nodemon dist/main.js",
-    "start": "node dist/index.js",
-    "wachea": "tsc --watch"
+    "wachea": "tsc --watch",
+    "start": "wachea && nodemon dist/index.js"
   },
   "keywords": [
     "attendance",

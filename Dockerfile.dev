@@ -1,0 +1,22 @@
+FROM node:18.16.1
+
+RUN npm i -g nodemon
+
+
+
+RUN mkdir -p /home/node/dev
+
+WORKDIR /home/node/dev
+
+COPY  package*.json ./home/node/dev
+
+COPY . . 
+
+RUN npm install
+
+
+
+EXPOSE 3000
+
+
+CMD ["npm","run", "start"]

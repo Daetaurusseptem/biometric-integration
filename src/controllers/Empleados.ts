@@ -5,7 +5,7 @@ import { Asistencia } from '../models/asistencias';
 
 export const crearEmpleado = async (req: Request, res: Response) => {
   try {
-    console.log("antes ",req.body.nombre);
+    console.log("antes: ",req.body.nombre);
     if(req.body.nombre==''||undefined||null){
       req.body.nombre = 'no definido'
     }
@@ -34,6 +34,7 @@ export const obtenerEmpleado = async (req: Request, res: Response) => {
   }
 };
 export const obtenerEmpleados = async (req: Request, res: Response) => {
+  console.log('empleados chavones');
   try {
     const empleados = await Empleado.find().populate('empresa departamento');
     res.json(empleados);

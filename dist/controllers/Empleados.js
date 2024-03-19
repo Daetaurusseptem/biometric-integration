@@ -15,7 +15,7 @@ const horarios_1 = require("../models/horarios");
 const asistencias_1 = require("../models/asistencias");
 const crearEmpleado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("antes ", req.body.nombre);
+        console.log("antes: ", req.body.nombre);
         if (req.body.nombre == '' || undefined || null) {
             req.body.nombre = 'no definido';
         }
@@ -44,6 +44,7 @@ const obtenerEmpleado = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 exports.obtenerEmpleado = obtenerEmpleado;
 const obtenerEmpleados = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('empleados chavones');
     try {
         const empleados = yield empleado_1.Empleado.find().populate('empresa departamento');
         res.json(empleados);

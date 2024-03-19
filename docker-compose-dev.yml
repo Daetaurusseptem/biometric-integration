@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  biometric:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4001:3000"
+    volumes:
+      - .:/home/node/dev
+ 
