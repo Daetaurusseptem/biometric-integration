@@ -39,4 +39,5 @@ const empleadoSchema = new mongoose_1.Schema({
     posicion: { type: String },
     sincronizadoBiometrico: { type: Boolean, default: false }
 });
+empleadoSchema.index({ nombre: 'text', apellido1: 'text', apellido2: 'text', posicion: 'text' });
 exports.Empleado = mongoose_1.default.model('Empleado', empleadoSchema);

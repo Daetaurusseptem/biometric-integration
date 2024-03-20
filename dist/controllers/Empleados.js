@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registrarAsistencia = exports.asignarHorarioEmpleado = exports.eliminarEmpleado = exports.actualizarEmpleado = exports.obtenerEmpleadoPorId = exports.getEmployeesCompany = exports.getEmployeesByDepartmentId = exports.obtenerEmpleados = exports.obtenerEmpleado = exports.crearEmpleado = void 0;
+exports.registrarAsistencia = exports.asignarHorarioEmpleado = exports.eliminarEmpleado = exports.actualizarEmpleado = exports.obtenerEmpleadoPorId = exports.getEmployeesCompany = exports.getEmployeesByDepartmentId = exports.obtenerEmpleados = exports.obtenerEmpleado = exports.getAsistenciasPaginadas = exports.crearEmpleado = void 0;
 const empleado_1 = require("../models/empleado");
 const horarios_1 = require("../models/horarios");
 const asistencias_1 = require("../models/asistencias");
@@ -40,6 +40,43 @@ const crearEmpleado = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.crearEmpleado = crearEmpleado;
+const getAsistenciasPaginadas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // Conversión explícita a String para evitar problemas de tipos
+    const empresaId = req.params.empresaId.toString();
+    const departamentoId = req.query.departamentoId ? req.query.departamentoId.toString() : null;
+    const terminoBusqueda = req.query.terminoBusqueda ? req.query.terminoBusqueda.toString() : '';
+    const numeroRegistros = parseInt(req.query.numeroRegistros) || 5;
+    const pagina = parseInt(req.query.pagina) || 1;
+    const skip = (pagina - 1) * numeroRegistros;
+    try {
+        // Buscar empleados que pertenezcan a la empresa (y opcionalmente al departamento)
+        let filtroEmpleados = { empresa: empresaId };
+        if (departamentoId)
+            filtroEmpleados.departamento = departamentoId;
+        if (terminoBusqueda)
+            filtroEmpleados.$text = { $search: terminoBusqueda };
+        console.log(filtroEmpleados);
+        const empleados = yield empleado_1.Empleado.find(filtroEmpleados).select('_id');
+        const empleadoIds = empleados.map(empleado => empleado._id);
+        // Filtro para asistencias que pertenecen a los empleados encontrados
+        const filtroAsistencias = { empleado: { $in: empleadoIds } };
+        const asistencias = yield asistencias_1.Asistencia.find(filtroAsistencias)
+            .populate('empleado', 'nombre apellido1 apellido2')
+            .skip(skip)
+            .limit(numeroRegistros);
+        const totalAsistencias = yield asistencias_1.Asistencia.countDocuments(filtroAsistencias);
+        res.json({
+            pagina,
+            paginas: Math.ceil(totalAsistencias / numeroRegistros),
+            totalAsistencias,
+            asistencias
+        });
+    }
+    catch (error) {
+        res.status(500).send({ message: "Error al obtener las asistencias", error });
+    }
+});
+exports.getAsistenciasPaginadas = getAsistenciasPaginadas;
 const obtenerEmpleado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('empleado chavon');

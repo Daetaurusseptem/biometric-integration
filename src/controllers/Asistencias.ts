@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { Asistencia } from '../models/asistencias';
 import { Empleado } from '../models/empleado';
 import mongoose from 'mongoose';
+import moment from 'moment';
+import dayjs from 'dayjs';
 
 interface AsistenciaData {
   deviceUserId: string;
@@ -125,3 +127,44 @@ export const registrarAsistencias= async (req: Request, res: Response) => {
 
   res.json(resultados);
 }
+
+
+export const getAsistenciasMes = async (req: Request, res: Response) => {
+  const { empresaId } = req.params;
+  const { month, year, departamentoId } = req.query; // Recibir mes y año como query params
+
+  if (!month || !year) {
+      return res.status(400).json({ message: 'Mes y año son requeridos' });
+  }
+
+  // Convertir mes y año a fechas de inicio y fin del mes
+  const inicioMes = dayjs(`${year}-${month}-01`).startOf('month');
+  const finMes = dayjs(inicioMes).endOf('month');
+  console.log(inicioMes, finMes);
+
+  try {
+      let filtroEmpleados:any = { empresa: empresaId };
+
+      // Agregar filtro por departamento si se proporciona
+      if (departamentoId) {
+          filtroEmpleados.departamento = departamentoId;
+      }
+
+      // Obtener los IDs de empleados que cumplen con el filtro
+      const empleados = await Empleado.find(filtroEmpleados, '_id');
+
+      // Mapear a un arreglo de IDs
+      const empleadosIds = empleados.map(empleado => empleado._id);
+
+      // Obtener asistencias de los empleados en el rango de fechas
+      const asistencias = await Asistencia.find({
+          empleado: { $in: empleadosIds },
+          entrada: { $gte: inicioMes.toDate(), $lte: finMes.toDate() }
+      }).populate('empleado');
+
+      res.json(asistencias);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al obtener las asistencias', error });
+  }
+};

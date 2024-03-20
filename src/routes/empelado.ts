@@ -10,6 +10,7 @@ router.get('/empleado/:empresaId/:empleadoId', empleadoController.obtenerEmplead
 
 router.get('/', empleadoController.obtenerEmpleados);
 router.get('/empresa/:empresaId', empleadoController.getEmployeesCompany);
+router.get('/empresa/avanzado/:empresaId', empleadoController.getAsistenciasPaginadas);
 router.get('/:id', empleadoController.obtenerEmpleadoPorId);
 router.put('/:id', empleadoController.actualizarEmpleado);
 router.delete('/:id', empleadoController.eliminarEmpleado);
@@ -17,3 +18,4 @@ router.get('/by-department/:departmentId', empleadoController.getEmployeesByDepa
 router.get('/company/all/:empresaId', empleadoController.getEmployeesCompany);
 
 export default router;
+ 

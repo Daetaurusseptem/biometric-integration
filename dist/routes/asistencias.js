@@ -32,6 +32,7 @@ const jwt_1 = require("../middleware/jwt");
 const router = express_1.default.Router();
 router.post('/', jwt_1.verifyToken, asistenciaController.registrarAsistencia);
 router.get('/', jwt_1.verifyToken, asistenciaController.obtenerAsistencias);
+router.get('/mensuales/:empresaId', asistenciaController.getAsistenciasMes);
 router.get('/empleado/:empleadoId', jwt_1.verifyToken, asistenciaController.obtenerAsistenciasEmpleado);
 router.put('/:id', jwt_1.verifyToken, asistenciaController.actualizarAsistencia);
 router.delete('/:id', jwt_1.verifyToken, asistenciaController.eliminarAsistencia);

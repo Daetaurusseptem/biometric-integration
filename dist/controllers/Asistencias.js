@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registrarAsistencias = exports.eliminarAsistencia = exports.actualizarAsistencia = exports.obtenerAsistenciasEmpleado = exports.obtenerAsistencias = exports.registrarAsistencia = void 0;
+exports.getAsistenciasMes = exports.registrarAsistencias = exports.eliminarAsistencia = exports.actualizarAsistencia = exports.obtenerAsistenciasEmpleado = exports.obtenerAsistencias = exports.registrarAsistencia = void 0;
 const asistencias_1 = require("../models/asistencias");
 const empleado_1 = require("../models/empleado");
+const dayjs_1 = __importDefault(require("dayjs"));
 const registrarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { empleadoId, fechaHora, tipo, detalles } = req.body;
@@ -128,3 +132,36 @@ const registrarAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, fun
     res.json(resultados);
 });
 exports.registrarAsistencias = registrarAsistencias;
+const getAsistenciasMes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { empresaId } = req.params;
+    const { month, year, departamentoId } = req.query; // Recibir mes y año como query params
+    if (!month || !year) {
+        return res.status(400).json({ message: 'Mes y año son requeridos' });
+    }
+    // Convertir mes y año a fechas de inicio y fin del mes
+    const inicioMes = (0, dayjs_1.default)(`${year}-${month}-01`).startOf('month');
+    const finMes = (0, dayjs_1.default)(inicioMes).endOf('month');
+    console.log(inicioMes, finMes);
+    try {
+        let filtroEmpleados = { empresa: empresaId };
+        // Agregar filtro por departamento si se proporciona
+        if (departamentoId) {
+            filtroEmpleados.departamento = departamentoId;
+        }
+        // Obtener los IDs de empleados que cumplen con el filtro
+        const empleados = yield empleado_1.Empleado.find(filtroEmpleados, '_id');
+        // Mapear a un arreglo de IDs
+        const empleadosIds = empleados.map(empleado => empleado._id);
+        // Obtener asistencias de los empleados en el rango de fechas
+        const asistencias = yield asistencias_1.Asistencia.find({
+            empleado: { $in: empleadosIds },
+            entrada: { $gte: inicioMes.toDate(), $lte: finMes.toDate() }
+        }).populate('empleado');
+        res.json(asistencias);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener las asistencias', error });
+    }
+});
+exports.getAsistenciasMes = getAsistenciasMes;

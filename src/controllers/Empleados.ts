@@ -1,4 +1,4 @@
-import { Request, Response, response } from 'express';
+import { Request, Response } from 'express';
 import { Empleado } from '../models/empleado';
 import { Horario } from '../models/horarios';
 import { Asistencia } from '../models/asistencias';
@@ -37,6 +37,44 @@ export const crearEmpleado = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json(error);
+  }
+};
+export const getAsistenciasPaginadas = async (req:Request, res:Response) => {
+  // Conversión explícita a String para evitar problemas de tipos
+  const empresaId = req.params.empresaId!.toString();
+  const departamentoId = req.query.departamentoId ? req.query.departamentoId.toString() : null;
+  const terminoBusqueda = req.query.terminoBusqueda ? req.query.terminoBusqueda.toString() : '';
+  const numeroRegistros = parseInt(req.query.numeroRegistros as string) || 5;
+  const pagina = parseInt(req.query.pagina as string) || 1;
+  const skip = (pagina - 1) * numeroRegistros;
+
+  try {
+      // Buscar empleados que pertenezcan a la empresa (y opcionalmente al departamento)
+      let filtroEmpleados:any = { empresa: empresaId };
+      if (departamentoId) filtroEmpleados.departamento = departamentoId;
+      if (terminoBusqueda) filtroEmpleados.$text = { $search: terminoBusqueda };
+      console.log(filtroEmpleados);
+
+      const empleados = await Empleado.find(filtroEmpleados).select('_id');
+      const empleadoIds = empleados.map(empleado => empleado._id);
+
+      // Filtro para asistencias que pertenecen a los empleados encontrados
+      const filtroAsistencias = { empleado: { $in: empleadoIds } };
+      const asistencias = await Asistencia.find(filtroAsistencias)
+          .populate('empleado', 'nombre apellido1 apellido2')
+          .skip(skip)
+          .limit(numeroRegistros);
+
+      const totalAsistencias = await Asistencia.countDocuments(filtroAsistencias);
+
+      res.json({
+          pagina,
+          paginas: Math.ceil(totalAsistencias / numeroRegistros),
+          totalAsistencias,
+          asistencias
+      });
+  } catch (error) {
+      res.status(500).send({ message: "Error al obtener las asistencias", error });
   }
 };
 
