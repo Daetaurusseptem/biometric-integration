@@ -1,15 +1,32 @@
-import { Request, Response } from 'express';
+import { Request, Response, response } from 'express';
 import { Empleado } from '../models/empleado';
 import { Horario } from '../models/horarios';
 import { Asistencia } from '../models/asistencias';
+import { Departamento } from '../models/departamentos';
 
 export const crearEmpleado = async (req: Request, res: Response) => {
   try {
-    console.log("antes: ",req.body.nombre);
-    if(req.body.nombre==''||undefined||null){
-      req.body.nombre = 'no definido'
-    }
-    console.log("despues ",req.body.nombre);
+
+    const {nombre, departamento, empresa} = req.body;
+    
+    //validaciones de momento no disponibles para datos rellenables ya que los empleados son creados obteniendolos de el biometrico al sync script y de ahi aqui (API)
+    // const departamentoDb = await Departamento.find({empresa, _id:departamento});
+    // if(departamento!=='' ||undefined||null ){
+    //   if(!departamentoDb){
+    //   res.status(404).json({
+    //     ok:false,
+    //     msg:'El departamento no existe'
+    //   })
+    //   }
+    // }
+   
+    
+     if(nombre == ''||undefined||null){
+       req.body.nombre = 'no definido'
+     }
+    
+
+    
     const nuevoEmpleado = new Empleado(req.body);
      
     const empleadoGuardado = await nuevoEmpleado.save();
@@ -55,7 +72,7 @@ export const getEmployeesCompany = async (req: Request, res: Response) => {
   try {
       const empresaId = req.params.empresaId;
       const employees = await Empleado.find({ empresa: empresaId });
-      res.status(200).json({ok:true, empleado:employees});
+      res.status(200).json({ok:true, empleados:employees});
   } catch (error) {
       res.status(500).json(error);
   }
@@ -65,7 +82,7 @@ export const obtenerEmpleadoPorId = async (req: Request, res: Response) => {
   try {
     const empleado = await Empleado.findById(req.params.id).populate('empresa departamento');
     if (!empleado) return res.status(404).json({ message: 'Empleado no encontrado' });
-    res.json(empleado);
+    res.status(200).json({ok:true, empleado});
   } catch (error) {
     res.status(500).json(error);
   }

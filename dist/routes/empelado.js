@@ -32,6 +32,7 @@ const router = express_1.default.Router();
 router.post('/', empleadoController.crearEmpleado);
 router.get('/empleado/:empresaId/:empleadoId', empleadoController.obtenerEmpleado);
 router.get('/', empleadoController.obtenerEmpleados);
+router.get('/empresa/:empresaId', empleadoController.getEmployeesCompany);
 router.get('/:id', empleadoController.obtenerEmpleadoPorId);
 router.put('/:id', empleadoController.actualizarEmpleado);
 router.delete('/:id', empleadoController.eliminarEmpleado);

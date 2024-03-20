@@ -15,11 +15,20 @@ const horarios_1 = require("../models/horarios");
 const asistencias_1 = require("../models/asistencias");
 const crearEmpleado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("antes: ", req.body.nombre);
-        if (req.body.nombre == '' || undefined || null) {
+        const { nombre, departamento, empresa } = req.body;
+        //validaciones de momento no disponibles para datos rellenables ya que los empleados son creados obteniendolos de el biometrico al sync script y de ahi aqui (API)
+        // const departamentoDb = await Departamento.find({empresa, _id:departamento});
+        // if(departamento!=='' ||undefined||null ){
+        //   if(!departamentoDb){
+        //   res.status(404).json({
+        //     ok:false,
+        //     msg:'El departamento no existe'
+        //   })
+        //   }
+        // }
+        if (nombre == '' || undefined || null) {
             req.body.nombre = 'no definido';
         }
-        console.log("despues ", req.body.nombre);
         const nuevoEmpleado = new empleado_1.Empleado(req.body);
         const empleadoGuardado = yield nuevoEmpleado.save();
         res.status(201).json({
@@ -69,7 +78,7 @@ const getEmployeesCompany = (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         const empresaId = req.params.empresaId;
         const employees = yield empleado_1.Empleado.find({ empresa: empresaId });
-        res.status(200).json({ ok: true, empleado: employees });
+        res.status(200).json({ ok: true, empleados: employees });
     }
     catch (error) {
         res.status(500).json(error);
@@ -81,7 +90,7 @@ const obtenerEmpleadoPorId = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const empleado = yield empleado_1.Empleado.findById(req.params.id).populate('empresa departamento');
         if (!empleado)
             return res.status(404).json({ message: 'Empleado no encontrado' });
-        res.json(empleado);
+        res.status(200).json({ ok: true, empleado });
     }
     catch (error) {
         res.status(500).json(error);
