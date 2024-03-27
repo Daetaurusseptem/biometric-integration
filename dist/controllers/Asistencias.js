@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAsistenciasMes = exports.registrarAsistencias = exports.eliminarAsistencia = exports.actualizarAsistencia = exports.obtenerAsistenciasEmpleado = exports.obtenerAsistencias = exports.registrarAsistencia = void 0;
+exports.getAsistenciasMes = exports.registrarAsistenciasOLD = exports.getEmpleadosEmpresaConAsistencias = exports.registrarAsistencias = exports.eliminarAsistencia = exports.actualizarAsistencia = exports.obtenerAsistenciasEmpleado = exports.obtenerAsistencias = exports.registrarAsistencia = void 0;
 const asistencias_1 = require("../models/asistencias");
 const empleado_1 = require("../models/empleado");
+const horarios_1 = require("../models/horarios");
 const dayjs_1 = __importDefault(require("dayjs"));
 const registrarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -77,10 +78,112 @@ const eliminarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.eliminarAsistencia = eliminarAsistencia;
+//MEJORADO
 const registrarAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { asistencias } = req.body;
+    const empresaId = req.params.empresaId;
+    // Agrupar asistencias por deviceUserId y luego por día
+    const asistenciasAgrupadas = asistencias.reduce((acc, asistencia) => {
+        const { deviceUserId, tiempoRegistro } = asistencia;
+        const fecha = (0, dayjs_1.default)(tiempoRegistro).format('YYYY-MM-DD');
+        if (!acc[deviceUserId])
+            acc[deviceUserId] = {};
+        if (!acc[deviceUserId][fecha])
+            acc[deviceUserId][fecha] = [];
+        acc[deviceUserId][fecha].push(new Date(tiempoRegistro));
+        return acc;
+    }, {});
+    const resultados = [];
+    for (const deviceUserId in asistenciasAgrupadas) {
+        const empleado = yield empleado_1.Empleado.findOne({ empresa: empresaId, uidBiometrico: deviceUserId });
+        if (!empleado) {
+            resultados.push({ deviceUserId, resultado: 'Empleado no registrado en la empresa' });
+            continue;
+        }
+        // Obtener el horario del departamento si existe
+        let horario;
+        if (empleado.departamento) {
+            horario = yield horarios_1.Horario.findOne({ departamento: empleado.departamento });
+        }
+        for (const fecha in asistenciasAgrupadas[deviceUserId]) {
+            const tiempos = asistenciasAgrupadas[deviceUserId][fecha].sort((a, b) => a.getTime() - b.getTime());
+            const entrada = tiempos[0];
+            const salida = tiempos[tiempos.length - 1];
+            let tipo = 'asistencia'; // Default tipo
+            if (horario) {
+                // Comparar horarios con los límites establecidos en el horario del departamento
+                const horaEntrada = entrada.getHours() + entrada.getMinutes() / 60;
+                const horaSalida = salida.getHours() + salida.getMinutes() / 60;
+                if (horaEntrada > horario.limiteInicio || horaSalida < horario.limiteSalida) {
+                    tipo = 'inconsistencia';
+                }
+            }
+            else if (tiempos.length === 1) {
+                tipo = 'inconsistencia'; // Considerar una única asistencia como inconsistencia
+            }
+            try {
+                const asistencia = yield asistencias_1.Asistencia.create({
+                    empleado: empleado._id,
+                    entrada,
+                    salida,
+                    tipo,
+                    detalles: tiempos.length > 1 ? '' : 'Solo una marca de tiempo registrada'
+                });
+                resultados.push({ deviceUserId, fecha, resultado: 'Registrado', asistenciaId: asistencia._id });
+            }
+            catch (error) {
+                resultados.push({ deviceUserId, fecha, resultado: 'Error al registrar asistencia', error });
+            }
+        }
+    }
+    return res.json(resultados);
+});
+exports.registrarAsistencias = registrarAsistencias;
+//
+const getEmpleadosEmpresaConAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const empresaId = req.params.empresaId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const { year, month } = req.query;
+    // Valor del mes '01', '02', etc.
+    console.log(req.query);
+    // Valor del año '2024', '2025', etc.
+    const skip = (page - 1) * limit;
+    // Construir las fechas de inicio y fin del mes
+    try {
+        console.log(year);
+        console.log(month);
+        const startOfMonth = (0, dayjs_1.default)(`${year}-${month}-01`).startOf('month').toDate();
+        const endOfMonth = (0, dayjs_1.default)(`${year}-${month}-01`).endOf('month').toDate();
+        // Paso 1: Obtener empleados de la empresa y paginar
+        console.log(startOfMonth, endOfMonth);
+        const empleados = yield empleado_1.Empleado.find({ empresa: empresaId })
+            .skip(skip)
+            .limit(limit);
+        // Paso 2: Para cada empleado, obtener sus asistencias dentro del rango del mes proporcionado
+        const empleadosConAsistencias = yield Promise.all(empleados.map((empleado) => __awaiter(void 0, void 0, void 0, function* () {
+            const asistencias = yield asistencias_1.Asistencia.find({
+                empleado: empleado._id,
+                entrada: { $gte: startOfMonth, $lte: endOfMonth }
+            });
+            return Object.assign(Object.assign({}, empleado.toObject()), { // Utiliza toObject para evitar problemas con _doc
+                asistencias });
+        })));
+        res.status(200).json({
+            ok: true,
+            empleados: empleadosConAsistencias
+        });
+    }
+    catch (error) {
+        console.error("Error al obtener empleados con asistencias", error);
+        res.status(500).json({ message: "Error al obtener empleados con asistencias", error });
+    }
+});
+exports.getEmpleadosEmpresaConAsistencias = getEmpleadosEmpresaConAsistencias;
+//ANTERIOR
+const registrarAsistenciasOLD = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { asistencias } = req.body;
     const { empresaId } = req.params;
-    console.log('ssss');
     // Agrupar asistencias por deviceUserId
     const asistenciasPorUsuario = asistencias.reduce((acc, asistencia) => {
         const { deviceUserId, tiempoRegistro } = asistencia;
@@ -131,7 +234,7 @@ const registrarAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
     res.json(resultados);
 });
-exports.registrarAsistencias = registrarAsistencias;
+exports.registrarAsistenciasOLD = registrarAsistenciasOLD;
 const getAsistenciasMes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { empresaId } = req.params;
     const { month, year, departamentoId } = req.query; // Recibir mes y año como query params
