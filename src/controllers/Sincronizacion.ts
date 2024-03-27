@@ -31,13 +31,13 @@ export const sincronizarDatosBiometricos = async (req: Request, res: Response) =
 
         // Procesar cada usuario obtenido del dispositivo biométrico
         for (const user of users.data) {
-            const { uid, name, role, userId } = user;
+            const { uid, name, role, deviceUserId } = user;
 
-            let empleado = await Empleado.findOne({ userId });
+            let empleado = await Empleado.findOne({ deviceUserId });
             if (!empleado) {
                 // Crear un nuevo empleado si no existe
                     empleado = new Empleado({
-                    uidBiometrico: userId,
+                    uidBiometrico: deviceUserId,
                     nombre: name,
                     role: role,
                     sincronizadoBiometrico: true,
@@ -50,7 +50,7 @@ export const sincronizarDatosBiometricos = async (req: Request, res: Response) =
                 await Empleado.findByIdAndUpdate(empleado._id, {
                     nombre: name,
                     role: role,
-                    userIdBiometrico: userId,
+                    userIdBiometrico: deviceUserId,
                     sincronizadoBiometrico: true
                 });
             }
