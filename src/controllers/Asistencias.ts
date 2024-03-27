@@ -172,9 +172,12 @@ export const getEmpleadosEmpresaConAsistencias = async (req: Request, res: Respo
       };
     }));
 
+    const totalEmpleados = await Empleado.countDocuments({ empresa: empresaId })
+
     res.status(200).json({
       ok: true,
-      empleados: empleadosConAsistencias
+      empleados: empleadosConAsistencias,
+      totalEmpleados
     });
   } catch (error) {
     console.error("Error al obtener empleados con asistencias", error);

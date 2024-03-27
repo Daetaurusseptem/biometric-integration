@@ -169,9 +169,11 @@ const getEmpleadosEmpresaConAsistencias = (req, res) => __awaiter(void 0, void 0
             return Object.assign(Object.assign({}, empleado.toObject()), { // Utiliza toObject para evitar problemas con _doc
                 asistencias });
         })));
+        const totalEmpleados = yield empleado_1.Empleado.countDocuments({ empresa: empresaId });
         res.status(200).json({
             ok: true,
-            empleados: empleadosConAsistencias
+            empleados: empleadosConAsistencias,
+            totalEmpleados
         });
     }
     catch (error) {
