@@ -12,12 +12,14 @@ export const getMenuFrontEnd = (rol = 'admin') => {
 
 
   if (rol === 'admin') {
-    menu[0].title = 'ADMIN TOOLS'
-    menu[0].id = 'admin'
+    menu[0].title = 'Admin'
+    menu[0].id = 'dashboard'
     menu[0].icon = 'bi bi-cone-striped'
     menu[0].submenu.unshift(
-      // { title: 'Empresa', url: 'admin/company', icon: 'bi bi-building-fill' },
-      // { title: 'Usuarios', url: 'admin/users', icon: 'bi bi-people-fill' },
+       { title: 'dashboard', url: '/dashboard', icon: 'bi bi-building-fill' },
+       { title: 'Usuarios', url: 'admin/users', icon: 'bi bi-people-fill' },
+       { title: 'Empleados', url: 'admin/employees', icon: 'bi bi-people-fill' },
+       { title: 'Asistencias', url: 'admin/employees/attendances', icon: 'bi bi-people-fill' },
       // { title: 'Productos', url: 'admin/products', icon: 'bi bi-bag-fill' },
       // { title: 'Proveedores', url: 'admin/products', icon: 'bi bi-file-earmark-person' },
       // { title: 'Lotes', url: 'admin/products', icon: 'bi bi-box2-fill' },
@@ -25,7 +27,7 @@ export const getMenuFrontEnd = (rol = 'admin') => {
     
 
 
-    );
+    );  
   }
 
   if (rol === 'sysadmin') {

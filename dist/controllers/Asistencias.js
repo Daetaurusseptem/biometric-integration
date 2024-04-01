@@ -143,6 +143,7 @@ exports.registrarAsistencias = registrarAsistencias;
 const getEmpleadosEmpresaConAsistencias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const empresaId = req.params.empresaId;
     const page = parseInt(req.query.page) || 1;
+    const { termino } = req.params;
     const limit = parseInt(req.query.limit) || 10;
     const { year, month } = req.query;
     // Valor del mes '01', '02', etc.
@@ -151,8 +152,6 @@ const getEmpleadosEmpresaConAsistencias = (req, res) => __awaiter(void 0, void 0
     const skip = (page - 1) * limit;
     // Construir las fechas de inicio y fin del mes
     try {
-        console.log(year);
-        console.log(month);
         const startOfMonth = (0, dayjs_1.default)(`${year}-${month}-01`).startOf('month').toDate();
         const endOfMonth = (0, dayjs_1.default)(`${year}-${month}-01`).endOf('month').toDate();
         // Paso 1: Obtener empleados de la empresa y paginar

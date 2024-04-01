@@ -137,6 +137,8 @@ export const registrarAsistencias = async (req: Request, res: Response): Promise
 export const getEmpleadosEmpresaConAsistencias = async (req: Request, res: Response) => {
   const empresaId = req.params.empresaId;
   const page = parseInt(req.query.page as string) || 1;
+  const {termino } = req.params;
+
   const limit = parseInt(req.query.limit as string) || 10;
   const { year, month } = req.query;
   // Valor del mes '01', '02', etc.
@@ -149,10 +151,14 @@ export const getEmpleadosEmpresaConAsistencias = async (req: Request, res: Respo
   // Construir las fechas de inicio y fin del mes
 
   try {
-    console.log(year);
-    console.log(month);
+
     const startOfMonth = dayjs(`${year}-${month}-01`).startOf('month').toDate();
     const endOfMonth = dayjs(`${year}-${month}-01`).endOf('month').toDate();
+
+    
+
+
+
     // Paso 1: Obtener empleados de la empresa y paginar
 
     console.log(startOfMonth, endOfMonth);
