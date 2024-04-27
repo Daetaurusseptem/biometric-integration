@@ -14,13 +14,19 @@ interface AsistenciaData {
 
 export const registrarAsistencia = async (req: Request, res: Response) => {
   try {
-    const { empleadoId, fechaHora, tipo, detalles } = req.body;
-    const empleado = await Empleado.findById(empleadoId);
-    if (!empleado) return res.status(404).json({ message: 'Empleado no encontrado' });
 
-    const nuevaAsistencia = new Asistencia({ empleado: empleadoId, fechaHora, tipo, detalles });
+    
+    const { entrada, salida, detalles, tipo } = req.body;
+    console.log("Data del body",req.body);
+    const { idEmpleado } = req.params;
+    return
+    const empleado = await Empleado.findById(idEmpleado);
+    if (!empleado) return res.status(404).json({ ok:false, message: 'Empleado no encontrado' });
+    console.log(entrada, salida);
+   
+    const nuevaAsistencia = new Asistencia({ empleado: idEmpleado, entrada, salida, detalles, tipo });
     await nuevaAsistencia.save();
-    res.status(201).json(nuevaAsistencia);
+    res.status(201).json({ok:true, nuevaAsistencia});
   } catch (error) {
     res.status(500).json(error);
   }
@@ -47,13 +53,18 @@ export const obtenerAsistenciasEmpleado = async (req: Request, res: Response) =>
 
 export const actualizarAsistencia = async (req: Request, res: Response) => {
   try {
-    const { asistenciaId, detalles } = req.body;
-    const asistenciaActualizada = await Asistencia.findByIdAndUpdate(asistenciaId, { detalles }, { new: true });
-    if (!asistenciaActualizada) return res.status(404).json({ message: 'Asistencia no encontrada' });
-    res.json(asistenciaActualizada);
+    console.log('update');
+    
+    const { id } = req.params;
+    const asistenciaActualizada = await Asistencia.findByIdAndUpdate(id, req.body, { new: true });
+    if (!asistenciaActualizada) return res.status(404).json({ok:false, message: 'Asistencia no encontrada' });
+    res.status(200).json({
+      ok:true,
+      asistenciaActualizada
+    });
   } catch (error) {
     res.status(500).json(error);
-  }
+  } 
 };
 
 export const eliminarAsistencia = async (req: Request, res: Response) => {

@@ -25,8 +25,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Asistencia = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const empleado_1 = require("./empleado");
 const asistenciaSchema = new mongoose_1.Schema({
-    empleado: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Empleado', required: true },
+    empleado: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Empleado', required: true } || empleado_1.Empleado,
     entrada: { type: Date, required: true },
     salida: { type: Date, required: true },
     tipo: { type: String, enum: ['asistencia', 'inconsistencia', 'falta', 'vacaciones', 'permiso'], required: true },

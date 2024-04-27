@@ -15,6 +15,7 @@ const horarios_1 = __importDefault(require("../routes/horarios"));
 const vacaciones_1 = __importDefault(require("../routes/vacaciones"));
 const auth_1 = __importDefault(require("../routes/auth"));
 const sync_1 = __importDefault(require("../routes/sync"));
+const reportes_1 = __importDefault(require("../routes/reportes"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -41,6 +42,7 @@ class Server {
         this.app.use('/api/horarios', horarios_1.default);
         this.app.use('/api/vacaciones', vacaciones_1.default);
         this.app.use('/api/sync', sync_1.default);
+        this.app.use('/api/reportes', reportes_1.default);
     }
     start(port) {
         this.app.listen(port, () => {

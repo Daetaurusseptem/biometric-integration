@@ -19,13 +19,17 @@ const horarios_1 = require("../models/horarios");
 const dayjs_1 = __importDefault(require("dayjs"));
 const registrarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { empleadoId, fechaHora, tipo, detalles } = req.body;
-        const empleado = yield empleado_1.Empleado.findById(empleadoId);
+        const { entrada, salida, detalles, tipo } = req.body;
+        console.log("Data del body", req.body);
+        const { idEmpleado } = req.params;
+        return;
+        const empleado = yield empleado_1.Empleado.findById(idEmpleado);
         if (!empleado)
-            return res.status(404).json({ message: 'Empleado no encontrado' });
-        const nuevaAsistencia = new asistencias_1.Asistencia({ empleado: empleadoId, fechaHora, tipo, detalles });
+            return res.status(404).json({ ok: false, message: 'Empleado no encontrado' });
+        console.log(entrada, salida);
+        const nuevaAsistencia = new asistencias_1.Asistencia({ empleado: idEmpleado, entrada, salida, detalles, tipo });
         yield nuevaAsistencia.save();
-        res.status(201).json(nuevaAsistencia);
+        res.status(201).json({ ok: true, nuevaAsistencia });
     }
     catch (error) {
         res.status(500).json(error);
@@ -55,11 +59,15 @@ const obtenerAsistenciasEmpleado = (req, res) => __awaiter(void 0, void 0, void 
 exports.obtenerAsistenciasEmpleado = obtenerAsistenciasEmpleado;
 const actualizarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { asistenciaId, detalles } = req.body;
-        const asistenciaActualizada = yield asistencias_1.Asistencia.findByIdAndUpdate(asistenciaId, { detalles }, { new: true });
+        console.log('update');
+        const { id } = req.params;
+        const asistenciaActualizada = yield asistencias_1.Asistencia.findByIdAndUpdate(id, req.body, { new: true });
         if (!asistenciaActualizada)
-            return res.status(404).json({ message: 'Asistencia no encontrada' });
-        res.json(asistenciaActualizada);
+            return res.status(404).json({ ok: false, message: 'Asistencia no encontrada' });
+        res.status(200).json({
+            ok: true,
+            asistenciaActualizada
+        });
     }
     catch (error) {
         res.status(500).json(error);

@@ -12,6 +12,7 @@ import horarioRoutes from '../routes/horarios';
 import vacacionesRoutes from '../routes/vacaciones';
 import authRoutes from '../routes/auth';
 import syncRoutes from '../routes/sync';
+import ReportesRoutes from '../routes/reportes';
 
 class Server {
   public app: Application;
@@ -44,6 +45,7 @@ class Server {
     this.app.use('/api/horarios', horarioRoutes);
     this.app.use('/api/vacaciones', vacacionesRoutes);
     this.app.use('/api/sync', syncRoutes);
+    this.app.use('/api/reportes', ReportesRoutes);
   }
 
   public start(port: number): void {

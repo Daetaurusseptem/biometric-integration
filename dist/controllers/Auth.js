@@ -32,9 +32,9 @@ const login = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const validPassword = bcrypt_1.default.compareSync(password, usuarioDB.password);
         if (!validPassword) {
-            return resp.status(400).json({
+            return resp.status(404).json({
                 ok: false,
-                msg: 'password invalido'
+                msg: 'Datos no validos'
             });
         }
         console.log(JSON.stringify(usuarioDB._id));
