@@ -10,5 +10,5 @@ const empresaSchema = new Schema({
   admin: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true }
 });
 
-export const Empresa = mongoose.model('Empresa', empresaSchema);
+export const Empresa = mongoose.model('empresas-biometricos', empresaSchema);
 
