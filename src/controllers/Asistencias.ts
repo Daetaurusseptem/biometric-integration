@@ -14,21 +14,28 @@ interface AsistenciaData {
 
 export const registrarAsistencia = async (req: Request, res: Response) => {
   try {
-
-    
     const { entrada, salida, detalles, tipo } = req.body;
-    console.log("Data del body",req.body);
     const { idEmpleado } = req.params;
-    return
+    console.log('creacion '+entrada, salida, detalles, tipo);
+    // Validaciones básicas
+    if (!entrada || !salida || !tipo) {
+      return res.status(400).json({ ok: false, message: 'Faltan datos requeridos (entrada, salida, tipo)' });
+    }
+
+    // Verificar si el empleado existe
     const empleado = await Empleado.findById(idEmpleado);
-    if (!empleado) return res.status(404).json({ ok:false, message: 'Empleado no encontrado' });
-    console.log(entrada, salida);
-   
+    if (!empleado) {
+      return res.status(404).json({ ok: false, message: 'Empleado no encontrado' });
+    }
+
+    // Crear nueva asistencia
     const nuevaAsistencia = new Asistencia({ empleado: idEmpleado, entrada, salida, detalles, tipo });
     await nuevaAsistencia.save();
-    res.status(201).json({ok:true, nuevaAsistencia});
+
+    return res.status(201).json({ ok: true, nuevaAsistencia });
   } catch (error) {
-    res.status(500).json(error);
+    console.error('Error al registrar asistencia:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
   }
 };
 
@@ -53,19 +60,24 @@ export const obtenerAsistenciasEmpleado = async (req: Request, res: Response) =>
 
 export const actualizarAsistencia = async (req: Request, res: Response) => {
   try {
-    console.log('update');
-    
     const { id } = req.params;
+
+    // Buscar y actualizar la asistencia
     const asistenciaActualizada = await Asistencia.findByIdAndUpdate(id, req.body, { new: true });
-    if (!asistenciaActualizada) return res.status(404).json({ok:false, message: 'Asistencia no encontrada' });
-    res.status(200).json({
-      ok:true,
+    if (!asistenciaActualizada) {
+      return res.status(404).json({ ok: false, message: 'Asistencia no encontrada' });
+    }
+
+    return res.status(200).json({
+      ok: true,
       asistenciaActualizada
     });
   } catch (error) {
-    res.status(500).json(error);
-  } 
+    console.error('Error al actualizar asistencia:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
 };
+
 
 export const eliminarAsistencia = async (req: Request, res: Response) => {
   try {
@@ -97,7 +109,7 @@ export const registrarAsistencias = async (req: Request, res: Response): Promise
 
   for (const deviceUserId in asistenciasAgrupadas) {
     const empleado = await Empleado.findOne({ empresa: empresaId, uidBiometrico: deviceUserId });
-
+ 
     if (!empleado) {
       resultados.push({ deviceUserId, resultado: 'Empleado no registrado en la empresa' });
       continue;

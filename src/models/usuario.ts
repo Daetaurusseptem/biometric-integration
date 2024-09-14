@@ -17,7 +17,7 @@ const usuarioSchema: Schema<IUser> = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   rol: { type: String, enum: ['admin', 'user', 'sysadmin'], default:'user' } ,
-  empresa: { type: Schema.Types.ObjectId, ref: 'Company', required:false }
+  empresa: { type: Schema.Types.ObjectId, ref: 'empresas-biometrico', required:false }
 });
 
 // Método para encriptar contraseña antes de guardar el usuario

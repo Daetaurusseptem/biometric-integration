@@ -50,9 +50,9 @@ class Server {
 
   public start(port: number): void {
     this.app.listen(port, () => {
-      console.log(`Servidor corriendo en el puerto ${port}`); 
+      console.log(`Servidor corriendo en el puerto ${port}`);  
     });
   }
 }
-
+ 
 export default new Server();

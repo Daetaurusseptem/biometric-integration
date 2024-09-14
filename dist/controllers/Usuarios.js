@@ -15,6 +15,11 @@ class UsuarioController {
     static crearUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const { username } = req.body;
+                const userNameExists = yield usuario_1.Usuario.find({ username });
+                if (userNameExists) {
+                    return res.status(400).json({ message: 'El nombre de usuario ya existe' });
+                }
                 const nuevoUsuario = new usuario_1.Usuario(req.body);
                 yield nuevoUsuario.save();
                 res.status(201).json(nuevoUsuario);
@@ -63,6 +68,22 @@ class UsuarioController {
         });
     }
     ;
+    static obtenerAdminsDisponibles(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Buscar todos los administradores que no tienen el campo 'empresa' en su documento
+                const usuarios = yield usuario_1.Usuario.find({
+                    rol: 'admin',
+                    empresa: { $exists: false } // Solo los admins que no están asignados a ninguna empresa
+                });
+                res.status(200).json({ ok: true, usuarios });
+            }
+            catch (error) {
+                console.error('Error al obtener admins disponibles:', error);
+                res.status(500).send({ message: 'Error al obtener los usuarios admin' });
+            }
+        });
+    }
     static obtenerUsuarioPorId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

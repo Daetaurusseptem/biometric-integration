@@ -20,19 +20,25 @@ const dayjs_1 = __importDefault(require("dayjs"));
 const registrarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { entrada, salida, detalles, tipo } = req.body;
-        console.log("Data del body", req.body);
         const { idEmpleado } = req.params;
-        return;
+        console.log('creacion ' + entrada, salida, detalles, tipo);
+        // Validaciones básicas
+        if (!entrada || !salida || !tipo) {
+            return res.status(400).json({ ok: false, message: 'Faltan datos requeridos (entrada, salida, tipo)' });
+        }
+        // Verificar si el empleado existe
         const empleado = yield empleado_1.Empleado.findById(idEmpleado);
-        if (!empleado)
+        if (!empleado) {
             return res.status(404).json({ ok: false, message: 'Empleado no encontrado' });
-        console.log(entrada, salida);
+        }
+        // Crear nueva asistencia
         const nuevaAsistencia = new asistencias_1.Asistencia({ empleado: idEmpleado, entrada, salida, detalles, tipo });
         yield nuevaAsistencia.save();
-        res.status(201).json({ ok: true, nuevaAsistencia });
+        return res.status(201).json({ ok: true, nuevaAsistencia });
     }
     catch (error) {
-        res.status(500).json(error);
+        console.error('Error al registrar asistencia:', error);
+        return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
     }
 });
 exports.registrarAsistencia = registrarAsistencia;
@@ -59,18 +65,20 @@ const obtenerAsistenciasEmpleado = (req, res) => __awaiter(void 0, void 0, void 
 exports.obtenerAsistenciasEmpleado = obtenerAsistenciasEmpleado;
 const actualizarAsistencia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log('update');
         const { id } = req.params;
+        // Buscar y actualizar la asistencia
         const asistenciaActualizada = yield asistencias_1.Asistencia.findByIdAndUpdate(id, req.body, { new: true });
-        if (!asistenciaActualizada)
+        if (!asistenciaActualizada) {
             return res.status(404).json({ ok: false, message: 'Asistencia no encontrada' });
-        res.status(200).json({
+        }
+        return res.status(200).json({
             ok: true,
             asistenciaActualizada
         });
     }
     catch (error) {
-        res.status(500).json(error);
+        console.error('Error al actualizar asistencia:', error);
+        return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
     }
 });
 exports.actualizarAsistencia = actualizarAsistencia;
