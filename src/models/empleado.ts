@@ -8,7 +8,7 @@ const empleadoSchema = new Schema({
   direccion: { type: String, default:'' },
   telefono: { type: String, default:'' },
   email: { type: String, default:'' },
-  empresa: { type: Schema.Types.ObjectId, ref: 'Empresa', required: true },
+  empresa: { type: Schema.Types.ObjectId, ref: 'empresas-biometricos', required: true },
   departamento: { type: Schema.Types.ObjectId, ref: 'Departamento' },
   fechaIngreso: { type: Date },
   posicion: { type: String },

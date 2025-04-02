@@ -122,6 +122,7 @@ export const obtenerEmpleadoPorId = async (req: Request, res: Response) => {
     if (!empleado) return res.status(404).json({ message: 'Empleado no encontrado' });
     res.status(200).json({ok:true, empleado});
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };

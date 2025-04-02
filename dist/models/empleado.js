@@ -33,7 +33,7 @@ const empleadoSchema = new mongoose_1.Schema({
     direccion: { type: String, default: '' },
     telefono: { type: String, default: '' },
     email: { type: String, default: '' },
-    empresa: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Empresa', required: true },
+    empresa: { type: mongoose_1.Schema.Types.ObjectId, ref: 'empresas-biometricos', required: true },
     departamento: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Departamento' },
     fechaIngreso: { type: Date },
     posicion: { type: String },

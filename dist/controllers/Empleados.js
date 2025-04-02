@@ -124,12 +124,14 @@ const getEmployeesCompany = (req, res) => __awaiter(void 0, void 0, void 0, func
 exports.getEmployeesCompany = getEmployeesCompany;
 const obtenerEmpleadoPorId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log(req.params);
         const empleado = yield empleado_1.Empleado.findById(req.params.id).populate('empresa departamento');
         if (!empleado)
             return res.status(404).json({ message: 'Empleado no encontrado' });
         res.status(200).json({ ok: true, empleado });
     }
     catch (error) {
+        console.log(error);
         res.status(500).json(error);
     }
 });
